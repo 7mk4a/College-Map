@@ -1,5 +1,6 @@
 import math
 import json
+import os
 
 # --- 1. Constants ---
 METERS_PER_PIXEL = 67/857   # ≈ 0.0781797
@@ -10,18 +11,32 @@ MAX_SPEED = 5.0              # same
 node_coordinates = {}
 connections = {}
 
-def load_map_data(json_file_path="college_map_data.json"):
+def load_map_data(json_file_path=None):
     global node_coordinates
     global connections
-    with open(json_file_path, 'r') as f:
+    if json_file_path is None:
+        here = os.path.dirname(__file__)
+        candidates = [
+            os.path.join(here, "college_map_data.json"),
+            os.path.join(here, "..", "college_map_data.json")
+        ]
+        for p in candidates:
+            if os.path.exists(p):
+                json_file_path = p
+                break
+    if not json_file_path or not os.path.exists(json_file_path):
+        print("Error: Map data file 'college_map_data.json' not found near the script or parent directory.")
+        return False
+    with open(json_file_path, "r", encoding="utf-8") as f:
         map_data = json.load(f)
     for node_name, data in map_data.items():
-        node_coordinates[node_name] = (data['x'], data['y'])
-        neighbors = data.get('neighbors', [])
+        node_coordinates[node_name] = (data["x"], data["y"])
+        neighbors = data.get("neighbors", [])
         if neighbors and isinstance(neighbors[0], dict):
-            connections[node_name] = [n['name'] for n in neighbors]
+            connections[node_name] = [n["name"] for n in neighbors]
         else:
             connections[node_name] = neighbors
+    return True
 
 load_map_data()
 

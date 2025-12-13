@@ -5,8 +5,8 @@ import os
 # --- 1. Constants ---
 METERS_PER_PIXEL = 67/857   # ≈ 0.0781797
       # CHANGED: from SCALE_RATIO=2.46 to real calibration (20px = 1m)
-ROBOT_SPEED = 5.0            # same
-MAX_SPEED = 5.0              # same
+Human_avg_Speed = .5486         # same
+MAX_SPEED = 1.2           # same
 
 node_coordinates = {}
 connections = {}
@@ -57,7 +57,7 @@ def pixels_to_m(dist_pixels):
 def calculate_time_cost(node_a, node_b):
     dist_pixels = calc_dist(node_a, node_b)
     real_dist_m = pixels_to_m(dist_pixels)  # CHANGED: was dist_pixels * SCALE_RATIO
-    return real_dist_m / ROBOT_SPEED
+    return real_dist_m / Human_avg_Speed 
 
 def calculate_heuristic(node, goal):
     dist_pixels = calc_dist(node, goal)
@@ -99,7 +99,7 @@ def a_star(start, goal):
                 if neighbor not in closed and neighbor not in path:
                     step_pixels = calc_dist(current_node, neighbor)
                     step_meters = pixels_to_m(step_pixels)   # CHANGED: use pixel->meter conversion
-                    step_time = step_meters / ROBOT_SPEED
+                    step_time = step_meters / Human_avg_Speed
 
                     new_g_time = g_time + step_time
                     new_g_dist = g_dist + step_meters        # CHANGED: distance now meters (correct)
@@ -122,8 +122,8 @@ def a_star(start, goal):
 
 # --- 6. Execution Block ---
 if __name__ == "__main__":
-    start_node = 'Point 2'
-    goal_node = 'Seminar-Door'
+    start_node = 'Point 8'
+    goal_node = 'Point 21'
 
     path, total_time, total_distance = a_star(start_node, goal_node)
 

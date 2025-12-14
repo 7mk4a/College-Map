@@ -2,17 +2,35 @@
   "schedule": [
     {
       "course": "Elementary Physics (C-PH111)",
-      "instructor": "Dr. Hassan ElShimy",
-      "room": "318",
+      "instructor": "Dr.Hassan Elshimy ",
+      "room": "318A",
       "group": "A",
       "day": "Sunday",
-      "start": "09:00",
+      "start": "9:00",
+      "end": "10:50"
+    },
+        {
+      "course": "Elementary Physics (C-PH111)",
+      "instructor": "Dr.Hassan Elshimy ",
+      "room": "318B",
+      "group": "A",
+      "day": "Sunday",
+      "start": "9:00",
       "end": "10:50"
     },
     {
       "course": "Calculus I (C-MA111)",
       "instructor": "Dr. Ramy Taki Elden",
-      "room": "318",
+      "room": "318A",
+      "group": "A",
+      "day": "Sunday",
+      "start": "11:10",
+      "end": "13:00"
+    },
+    {
+      "course": "Calculus I (C-MA111)",
+      "instructor": "Dr. Ramy Taki Elden",
+      "room": "318B",
       "group": "A",
       "day": "Sunday",
       "start": "11:10",
@@ -30,7 +48,7 @@
     {
       "course": "Intro to Computing & Programming Lab",
       "instructor": "Nourhan - Amira",
-      "room": "Lab 203",
+      "room": "203",
       "group": "G1",
       "day": "Sunday",
       "start": "14:10",
@@ -76,7 +94,7 @@
     {
       "course": "Intro to Computing & Programming Lab",
       "instructor": "Nourhan - Nadine",
-      "room": "Lab 202",
+      "room": "202",
       "group": "G2",
       "day": "Monday",
       "start": "10:00",
@@ -85,7 +103,7 @@
     {
       "course": "Elementary Physics Lab",
       "instructor": null,
-      "room": "Physics Lab 323",
+      "room": "323",
       "group": "G3",
       "day": "Monday",
       "start": "10:00",
@@ -103,13 +121,21 @@
     {
       "course": "Selected Topics in Humanities (Critical Thinking) (HUM126)",
       "instructor": "Dr. Nehal Afifi",
-      "room": "318",
+      "room": "318A",
       "group": "A",
       "day": "Monday",
       "start": "14:10",
       "end": "16:00"
     },
-
+    {
+      "course": "Selected Topics in Humanities (Critical Thinking) (HUM126)",
+      "instructor": "Dr. Nehal Afifi",
+      "room": "318B",
+      "group": "A",
+      "day": "Monday",
+      "start": "14:10",
+      "end": "16:00"
+    },
     {
       "course": "English (HUM111)",
       "instructor": null,
@@ -140,17 +166,34 @@
     {
       "course": "Intro to Programming (C-CS111)",
       "instructor": "Dr. Basma Hassan",
-      "room": "318",
+      "room": "318A",
       "group": "A",
       "day": "Tuesday",
       "start": "10:00",
       "end": "12:00"
     },
-
+{
+      "course": "Intro to Programming (C-CS111)",
+      "instructor": "Dr. Basma Hassan",
+      "room": "318B",
+      "group": "A",
+      "day": "Tuesday",
+      "start": "10:00",
+      "end": "12:00"
+    },
     {
       "course": "Intro to Programming (C-CS111)",
       "instructor": "Dr. Basma Hassan",
-      "room": "218",
+      "room": "218A",
+      "group": "A",
+      "day": "Wednesday",
+      "start": "09:00",
+      "end": "10:50"
+    },
+    {
+      "course": "Intro to Programming (C-CS111)",
+      "instructor": "Dr. Basma Hassan",
+      "room": "218B",
       "group": "A",
       "day": "Wednesday",
       "start": "09:00",
@@ -168,7 +211,7 @@
     {
       "course": "Intro to Computing & Programming Lab",
       "instructor": "Nourhan - Nadine",
-      "room": "Lab 202",
+      "room": "202",
       "group": "G3",
       "day": "Wednesday",
       "start": "11:10",
@@ -177,7 +220,7 @@
     {
       "course": "Elementary Physics Lab",
       "instructor": null,
-      "room": "Physics Lab 323",
+      "room": "323",
       "group": "G2",
       "day": "Wednesday",
       "start": "11:10",
@@ -204,7 +247,7 @@
     {
       "course": "Elementary Physics Lab",
       "instructor": null,
-      "room": "Physics Lab 323",
+      "room": "323",
       "group": "G1",
       "day": "Wednesday",
       "start": "15:00",

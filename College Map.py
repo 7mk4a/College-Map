@@ -83,8 +83,8 @@ def calc_dist(n1, n2):
         return float('inf')
     x1, y1 = node_coordinates[n1]
     x2, y2 = node_coordinates[n2]
-    dx = x2 - x1                       
-    dy = y2 - y1                       
+    dx = x2 - x1                      
+    dy = y2 - y1                      
     return math.sqrt(dx*dx + dy*dy)    
 
 def pixels_to_m(dist_pixels):
@@ -214,7 +214,73 @@ def show_Current_Time():
         0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday",
         4: "Friday", 5: "Saturday", 6: "Sunday"
     }
-    print(f"🕒 Current Time: {Hours.get(current_hour, 'Unknown')} on {Days.get(current_weekday, 'Unknown')}")
+    ## print(f"🕒 Current Time: {Hours.get(current_hour, 'Unknown')} on {Days.get(current_weekday, 'Unknown')}")
+    
+    return Days.get(current_weekday, "Unknown")
+
+
+# 🟢 (تعديل) الدالة دي لازم تكون بره show_Current_Time
+def check_room_status(target_room):
+    # 1. عرض الوقت وتحديد اليوم
+    today_name_str = show_Current_Time() 
+
+    # 2. تحميل الملف
+    file_name = "schedule.json" # تأكد أن اسم الملف صحيح
+    if not os.path.exists(file_name):
+        print(f"❌ Error: {file_name} file not found.")
+        return
+
+    with open(file_name, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # ⚠️ (تعديل هام 1) الدخول إلى القائمة داخل المفتاح "schedule"
+    # لو الملف مفيهوش مفتاح schedule، نستخدم البيانات زي ما هي
+    if isinstance(data, dict) and "schedule" in data:
+        schedule_data = data["schedule"]
+    else:
+        schedule_data = data
+
+    print(f"\n🔎 Checking schedule for room: {target_room} on {today_name_str}...")
+    
+    found_lecture = False
+    
+    # حساب الوقت الحالي بالدقائق
+    current_time_minutes = (current_hour * 60) + current_minute
+
+    for course in schedule_data:
+        # 3. التأكد من البيانات
+        room_in_json = str(course.get("room", "")) # تحويل الرقم لنص لتجنب المشاكل
+        day_in_json = course.get("day", "")
+        
+        # المقارنة: هل الغرفة واليوم متطابقين؟
+        if target_room in room_in_json and day_in_json == today_name_str:
+            
+            # ⚠️ (تعديل هام 2) استخدام مفاتيح الجيسون الجديد (start, end)
+            start_str = course.get("start", "00:00")
+            end_str = course.get("end", "00:00")
+
+            try:
+                start_h, start_m = map(int, start_str.split(":"))
+                end_h, end_m = map(int, end_str.split(":"))
+                
+                lecture_start_minutes = (start_h * 60) + start_m
+                lecture_end_minutes = (end_h * 60) + end_m
+
+                # هل الوقت الحالي جوه وقت المحاضرة؟
+                if lecture_start_minutes <= current_time_minutes <= lecture_end_minutes:
+                    print(f"\n Room is BUSY (Occupied)!")
+                    # ⚠️ (تعديل هام 3) استخدام الاسم الجديد (course) بدل (course_name)
+                    print(f"   Course:     {course.get('course', 'Unknown')}")
+                    print(f"   Instructor: {course.get('instructor', 'Unknown')}")
+                    print(f"   Group:      {course.get('group', 'Unknown')}")
+                    print(f"   Time:       {start_str} - {end_str}")
+                    found_lecture = True
+                    break 
+            except ValueError:
+                continue # لو صيغة الوقت غلط تخطى المحاضرة دي
+
+    if not found_lecture:
+        print(f"\n Room {target_room} is currently EMPTY. You can use it.")
 
 if __name__ == "__main__":
     print("\n--- Select Navigation Mode ---")
@@ -233,12 +299,13 @@ if __name__ == "__main__":
         
     print(f"\n🔹 Mode Active: {mode}")
     start_node = 'Auditorium-door1'
-    goal_node = 'English-Dept'
+    goal_node = '318A'
+
+    check_room_status(goal_node)
 
     path, total_time, total_distance = a_star(start_node, goal_node, mode) 
 
     if path:
-        show_Current_Time()
         print("\n✅ Path Found!")
         print(" -> ".join(path))
         print("-" * 30)

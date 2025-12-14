@@ -220,57 +220,61 @@ def show_Current_Time():
 
 
 def check_room_status(target_room):
-    today_name_str = show_Current_Time() 
-
-    file_name = "schedule.json" 
-    if not os.path.exists(file_name):
-        print(f"❌ Error: {file_name} file not found.")
+    if node_types.get(target_room) == "department" or node_types.get(target_room) == "corridor":
         return
-
-    with open(file_name, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    if isinstance(data, dict) and "schedule" in data:
-        schedule_data = data["schedule"]
     else:
-        schedule_data = data
-
-    print(f"\n🔎 Checking schedule for room: {target_room} on {today_name_str}...")
-    
-    found_lecture = False
-    
-    current_time_minutes = (current_hour * 60) + current_minute
-
-    for course in schedule_data:
-        room_in_json = str(course.get("room", "")) 
-        day_in_json = course.get("day", "")
         
+        today_name_str = show_Current_Time() 
+
+        file_name = "schedule.json" 
+        if not os.path.exists(file_name):
+            print(f"❌ Error: {file_name} file not found.")
+            return
+
+        with open(file_name, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        if isinstance(data, dict) and "schedule" in data:
+            schedule_data = data["schedule"]
+        else:
+            schedule_data = data
+
+        print(f"\n🔎 Checking schedule for room: {target_room} on {today_name_str}...")
         
-        if target_room in room_in_json and day_in_json == today_name_str:
+        found_lecture = False
+        
+        current_time_minutes = (current_hour * 60) + current_minute
+
+        for course in schedule_data:
+            room_in_json = str(course.get("room", "")) 
+            day_in_json = course.get("day", "")
             
-            start_str = course.get("start", "00:00")
-            end_str = course.get("end", "00:00")
-
-            try:
-                start_h, start_m = map(int, start_str.split(":"))
-                end_h, end_m = map(int, end_str.split(":"))
+            
+            if target_room in room_in_json and day_in_json == today_name_str:
                 
-                lecture_start_minutes = (start_h * 60) + start_m
-                lecture_end_minutes = (end_h * 60) + end_m
+                start_str = course.get("start", "00:00")
+                end_str = course.get("end", "00:00")
 
-                if lecture_start_minutes <= current_time_minutes <= lecture_end_minutes:
-                    print(f"\n Room is BUSY (Occupied)!")
-                    print(f"   Course:     {course.get('course', 'Unknown')}")
-                    print(f"   Instructor: {course.get('instructor', 'Unknown')}")
-                    print(f"   Group:      {course.get('group', 'Unknown')}")
-                    print(f"   Time:       {start_str} - {end_str}")
-                    found_lecture = True
-                    break 
-            except ValueError:
-                continue 
+                try:
+                    start_h, start_m = map(int, start_str.split(":"))
+                    end_h, end_m = map(int, end_str.split(":"))
+                    
+                    lecture_start_minutes = (start_h * 60) + start_m
+                    lecture_end_minutes = (end_h * 60) + end_m
 
-    if not found_lecture:
-        print(f"\n Room {target_room} is currently EMPTY. You can use it.")
+                    if lecture_start_minutes <= current_time_minutes <= lecture_end_minutes:
+                        print(f"\n Room is BUSY (Occupied)!")
+                        print(f"   Course:     {course.get('course', 'Unknown')}")
+                        print(f"   Instructor: {course.get('instructor', 'Unknown')}")
+                        print(f"   Group:      {course.get('group', 'Unknown')}")
+                        print(f"   Time:       {start_str} - {end_str}")
+                        found_lecture = True
+                        break 
+                except ValueError:
+                    continue 
+
+        if not found_lecture:
+            print(f"\n Room {target_room} is currently EMPTY. You can use it.")
 
 import math
 def generate_directions(path):
@@ -375,7 +379,7 @@ if __name__ == "__main__":
         
     print(f"\n🔹 Mode Active: {mode}")
     start_node = 'Admission'
-    goal_node = '318A'
+    goal_node = '218A'
 
     check_room_status(goal_node)
 

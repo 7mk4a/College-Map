@@ -8,12 +8,17 @@ METERS_PER_PIXEL = 67/857   # ≈ 0.0781797
 Human_avg_Speed = .5486         # same
 MAX_SPEED = 1.2           # same
 
+import json
+import os
+
 node_coordinates = {}
 connections = {}
+node_types = {}
+node_floors = {}
 
 def load_map_data(json_file_path=None):
-    global node_coordinates
-    global connections
+    global node_coordinates, connections, node_types, node_floors
+
     if json_file_path is None:
         here = os.path.dirname(__file__)
         candidates = [
@@ -24,45 +29,73 @@ def load_map_data(json_file_path=None):
             if os.path.exists(p):
                 json_file_path = p
                 break
+
     if not json_file_path or not os.path.exists(json_file_path):
-        print("Error: Map data file 'college_map_data.json' not found near the script or parent directory.")
+        print("Error: Map data file 'college_map_data.json' not found.")
         return False
+
     with open(json_file_path, "r", encoding="utf-8") as f:
         map_data = json.load(f)
+
     for node_name, data in map_data.items():
+        # Coordinates
         node_coordinates[node_name] = (data["x"], data["y"])
+
+        # Neighbors
         neighbors = data.get("neighbors", [])
         if neighbors and isinstance(neighbors[0], dict):
             connections[node_name] = [n["name"] for n in neighbors]
         else:
             connections[node_name] = neighbors
+
+        # Type & Floor (NEW)
+        node_types[node_name] = data.get("type", "corridor")
+        node_floors[node_name] = data.get("floor", 0)
+
     return True
+
 
 load_map_data()
 
+
 # --- 4. Helper Functions ---
+def calc_hypotenuse(D1, D2):
+    return math.sqrt(D1*D1 + D2*D2)
 
 def calc_dist(n1, n2):
     if n1 not in node_coordinates or n2 not in node_coordinates:
         return float('inf')
     x1, y1 = node_coordinates[n1]
     x2, y2 = node_coordinates[n2]
-    dx = x2 - x1                       # CHANGED: added dx for correct Euclidean distance
-    dy = y2 - y1                       # CHANGED: added dy for correct Euclidean distance
-    return math.sqrt(dx*dx + dy*dy)    # CHANGED: was (dx*2 + dy*2). Now dx^2 + dy^2
+    dx = x2 - x1                       
+    dy = y2 - y1                       
+    return math.sqrt(dx*dx + dy*dy)    
 
 def pixels_to_m(dist_pixels):
-    return dist_pixels * METERS_PER_PIXEL   # CHANGED: new conversion pixels -> meters
+    return dist_pixels * METERS_PER_PIXEL   
 
 def calculate_time_cost(node_a, node_b):
     dist_pixels = calc_dist(node_a, node_b)
-    real_dist_m = pixels_to_m(dist_pixels)  # CHANGED: was dist_pixels * SCALE_RATIO
+    real_dist_m = pixels_to_m(dist_pixels)  
     return real_dist_m / Human_avg_Speed 
 
 def calculate_heuristic(node, goal):
     dist_pixels = calc_dist(node, goal)
-    real_dist_m = pixels_to_m(dist_pixels)  # CHANGED: was dist_pixels * SCALE_RATIO
+    real_dist_m = pixels_to_m(dist_pixels)  
     return real_dist_m / MAX_SPEED
+
+def calculate_different_floors_heuristic(node, goal):
+    dist_pixels = calc_dist(node, goal)
+    real_dist_m = pixels_to_m(dist_pixels)  
+    if (node_floors.get(node, 0) == 0 and node_floors.get(goal, 0)==1) or node_floors.get(node, 0) == 1 and node_floors.get(goal, 0)==0 :
+        floor_diffrence_distance = 6.2 #meters
+        return calc_hypotenuse(real_dist_m, floor_diffrence_distance)/ MAX_SPEED
+    elif node_floors.get(node, 0) ==0 and node_floors.get(goal, 0)==2 or node_floors.get(node, 0) ==2 and node_floors.get(goal, 0)==0 :
+        floor_diffrence_distance = 11.2 
+        return calc_hypotenuse(real_dist_m, floor_diffrence_distance)/ MAX_SPEED
+    elif node_floors.get(node, 0) ==1 and node_floors.get(goal, 0)==2 or node_floors.get(node, 0) ==2 and node_floors.get(goal, 0)==1 :
+        floor_diffrence_distance = 5.0 
+        return calc_hypotenuse(real_dist_m, floor_diffrence_distance)/ MAX_SPEED
 
 # --- 5. A* Algorithm (Cumulative Time + Distance) ---
 
@@ -82,7 +115,10 @@ def a_star(start, goal):
         # Select best node based on f = g_time + h_time
         for i in range(len(open_list)):
             node, path, g_time, g_dist = open_list[i]
-            h = calculate_heuristic(node, goal)
+            if node_floors.get(node, 0) != node_floors.get(goal, 0):
+                h = calculate_different_floors_heuristic(node, goal)
+            else:
+                h = calculate_heuristic(node, goal)
             f = g_time + h
             if f < min_f:
                 min_f = f
@@ -122,8 +158,8 @@ def a_star(start, goal):
 
 # --- 6. Execution Block ---
 if __name__ == "__main__":
-    start_node = 'Point 8'
-    goal_node = 'Point 21'
+    start_node = 'Audetorium-leftSideDoor'
+    goal_node = 'Seminar toilet-Door'
 
     path, total_time, total_distance = a_star(start_node, goal_node)
 

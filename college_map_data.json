@@ -71,7 +71,6 @@
   "Stairs-S6": { "x": 834, "y": 379, "type": "stairs", "floor": 0, "neighbors": ["Point19"] },
 
 
-
   
 
   "B_Point 1": { "x": 156, "y": 409, "type": "corridor", "floor": 1, "neighbors": [ { "name": "218B" }, { "name": "B_Point 36" } ] },

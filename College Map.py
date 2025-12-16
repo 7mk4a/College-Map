@@ -4,11 +4,10 @@ import os
 
 # --- 1. Constants ---
 METERS_PER_PIXEL = 67/857   # ≈ 0.0781797
-      # CHANGED: from SCALE_RATIO=2.46 to real calibration (20px = 1m)
-Human_avg_Speed = .5486         # same
-MAX_SPEED = 1.2           # same
+Human_avg_Speed = .5486   
+MAX_SPEED = 1.2           
 
-
+# --- 2. Data Structures ---
 node_coordinates = {}
 connections = {}
 node_types = {}
@@ -116,14 +115,14 @@ def calculate_different_floors_heuristic(node, goal):
         floor_diffrence_distance = 5.0 
         return calc_hypotenuse(real_dist_m, floor_diffrence_distance)/ MAX_SPEED
 
-# --- 5. A* Algorithm (Cumulative Time + Distance) ---
+# A* Algorithm (Cumulative Time + Distance)
 
 def a_star(start, goal, mode ="normal"):
     if start not in node_coordinates or goal not in node_coordinates:
         print("Error: Invalid start or goal node names.")
         return None, 0, 0
 
-    # Structure: (node, path, g_time_seconds, g_distance_meters)
+    #            (node, path, g_time_seconds, g_distance_meters)
     open_list = [(start, [start], 0, 0)]
     closed = []
 
@@ -153,11 +152,11 @@ def a_star(start, goal, mode ="normal"):
             for neighbor in connections[current_node]:
                 if neighbor not in closed and neighbor not in path:
                     step_pixels = calc_dist(current_node, neighbor)
-                    step_meters = pixels_to_m(step_pixels)   # CHANGED: use pixel->meter conversion
+                    step_meters = pixels_to_m(step_pixels)  
                     step_time = calculate_time_cost(current_node, neighbor, mode)
 
                     new_g_time = g_time + step_time
-                    new_g_dist = g_dist + step_meters        # CHANGED: distance now meters (correct)
+                    new_g_dist = g_dist + step_meters 
 
                     new_path = path + [neighbor]
 
@@ -175,7 +174,7 @@ def a_star(start, goal, mode ="normal"):
     return None, float('inf'), float('inf')
 
 
-# --- 6. Execution Block ---
+# Execution Block
 if __name__ == "__main__":
     print("\n--- Select Navigation Mode ---")
     print("1. Energy Saver (Avoid Stairs)")
@@ -188,10 +187,12 @@ if __name__ == "__main__":
         mode = "energy_saver"
     elif choice == "3":
         mode = "wheelchair"
+    else :
+        mode = "normal"
         
     print(f"\n🔹 Mode Active: {mode}")
-    start_node = 'Audetorium-leftSideDoor'
-    goal_node = 'Seminar toilet-Door'
+    start_node = 'Auditorium-door1'
+    goal_node = 'English-Dept'
 
     path, total_time, total_distance = a_star(start_node, goal_node, mode) 
 
@@ -200,7 +201,7 @@ if __name__ == "__main__":
         print(" -> ".join(path))
         print("-" * 30)
         print(f"⏱  Total Time:     {total_time:.2f} seconds")
-        print(f"📏 Total Distance: {total_distance:.2f} m")  # CHANGED: label was cm but value is meters
+        print(f"📏 Total Distance: {total_distance:.2f} m")  
         print("-" * 30)
     else:
         print("\n❌ Could not find a path.")

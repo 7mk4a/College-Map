@@ -8,8 +8,6 @@ METERS_PER_PIXEL = 67/857   # ≈ 0.0781797
 Human_avg_Speed = .5486         # same
 MAX_SPEED = 1.2           # same
 
-import json
-import os
 
 node_coordinates = {}
 connections = {}

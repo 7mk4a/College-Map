@@ -74,9 +74,17 @@ def calc_dist(n1, n2):
 def pixels_to_m(dist_pixels):
     return dist_pixels * METERS_PER_PIXEL   
 
-def calculate_time_cost(node_a, node_b):
+def calculate_time_cost(node_a, node_b, mode="normal"):
     dist_pixels = calc_dist(node_a, node_b)
     real_dist_m = pixels_to_m(dist_pixels)
+    is_stairs = (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs')
+
+    if is_stairs:
+        if mode == "wheelchair":
+            return float ('inf')
+        if mode == "energy_saver":
+            return 60 + (real_dist_m / Human_avg_Speed)
+    
     if (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs') and (node_floors.get(node_a, 0) == 2 and node_floors.get(node_b, 0)==1) or (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==2):
         return 23
     if (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs') and (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==0) or (node_floors.get(node_a, 0) == 0 and node_floors.get(node_b, 0)==1):
@@ -112,7 +120,7 @@ def calculate_different_floors_heuristic(node, goal):
 
 # --- 5. A* Algorithm (Cumulative Time + Distance) ---
 
-def a_star(start, goal):
+def a_star(start, goal, mode ="normal"):
     if start not in node_coordinates or goal not in node_coordinates:
         print("Error: Invalid start or goal node names.")
         return None, 0, 0
@@ -148,7 +156,7 @@ def a_star(start, goal):
                 if neighbor not in closed and neighbor not in path:
                     step_pixels = calc_dist(current_node, neighbor)
                     step_meters = pixels_to_m(step_pixels)   # CHANGED: use pixel->meter conversion
-                    step_time = step_meters / Human_avg_Speed
+                    step_time = calculate_time_cost(current_node, neighbor, mode)
 
                     new_g_time = g_time + step_time
                     new_g_dist = g_dist + step_meters        # CHANGED: distance now meters (correct)
@@ -171,10 +179,23 @@ def a_star(start, goal):
 
 # --- 6. Execution Block ---
 if __name__ == "__main__":
+    print("\n--- Select Navigation Mode ---")
+    print("1. Energy Saver (Avoid Stairs)")
+    print("2. Normal (Fastest Route)")
+    print("3. Wheelchair (No Stairs)")
+    
+    choice = input("Enter choice (1, 2, or 3): ")
+    mode = "normal" 
+    if choice == "1":
+        mode = "energy_saver"
+    elif choice == "3":
+        mode = "wheelchair"
+        
+    print(f"\n🔹 Mode Active: {mode}")
     start_node = 'Audetorium-leftSideDoor'
     goal_node = 'Seminar toilet-Door'
 
-    path, total_time, total_distance = a_star(start_node, goal_node)
+    path, total_time, total_distance = a_star(start_node, goal_node, mode) 
 
     if path:
         print("\n✅ Path Found!")

@@ -76,7 +76,20 @@ def pixels_to_m(dist_pixels):
 
 def calculate_time_cost(node_a, node_b):
     dist_pixels = calc_dist(node_a, node_b)
-    real_dist_m = pixels_to_m(dist_pixels)  
+    real_dist_m = pixels_to_m(dist_pixels)
+    if (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs') and (node_floors.get(node_a, 0) == 2 and node_floors.get(node_b, 0)==1) or (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==2):
+        return 23
+    if (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs') and (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==0) or (node_floors.get(node_a, 0) == 0 and node_floors.get(node_b, 0)==1):
+        return 28 #asssumtion
+    if (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs') and (node_floors.get(node_a, 0) == 2 and node_floors.get(node_b, 0)==0) or (node_floors.get(node_a, 0) == 0 and node_floors.get(node_b, 0)==2):
+        return 51 #assumtion 
+    
+    if (node_types.get(node_a) == 'elevator' and node_types.get(node_b) == 'elevator') and (node_floors.get(node_a, 0) == 2 and node_floors.get(node_b, 0)==1) or (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==2):
+        return 14 #assumption for elevator time between floors 
+    if (node_types.get(node_a) == 'elevator' and node_types.get(node_b) == 'elevator') and (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==0) or (node_floors.get(node_a, 0) == 0 and node_floors.get(node_b, 0)==1):
+        return 18 ################################################
+    if (node_types.get(node_a) == 'elevator' and node_types.get(node_b) == 'elevator') and (node_floors.get(node_a, 0) == 2 and node_floors.get(node_b, 0)==0) or (node_floors.get(node_a, 0) == 0 and node_floors.get(node_b, 0)==2):
+        return 32 ################################################
     return real_dist_m / Human_avg_Speed 
 
 def calculate_heuristic(node, goal):

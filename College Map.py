@@ -1,11 +1,30 @@
 import math
 import json
 import os
+from datetime import datetime
+
+
+# --- 0. Current Time Info ---
+now = datetime.now()
+current_hour = now.hour        # 0–23
+current_minute = now.minute
+current_weekday = now.weekday()  # 0=Mon, 6=Sun
+
 
 # --- 1. Constants ---
 METERS_PER_PIXEL = 67/857   # ≈ 0.0781797
-Human_avg_Speed = .5486   
-MAX_SPEED = 1.2           
+Human_avg_Speed = .5486  #m/s
+MAX_SPEED = 1.2  #m/s
+BREAK_START = 13  # 1 PM
+BREAK_END = 14    # 2 PM
+ELEVATOR_DELAY_DURING_BREAK = 60  # seconds
+Ground_First_Floor_ElevTime = 18  # seconds
+Ground_Second_Floor_ElevTime = 25  # seconds
+First_Second_Floor_ElevTime = 15  # seconds
+Ground_First_Floor_StairsTime = 30  # seconds
+Ground_Second_Floor_StairsTime = 55  # seconds
+First_Second_Floor_StairsTime = 25  # seconds
+
 
 # --- 2. Data Structures ---
 node_coordinates = {}
@@ -75,26 +94,35 @@ def calculate_time_cost(node_a, node_b, mode="normal"):
     dist_pixels = calc_dist(node_a, node_b)
     real_dist_m = pixels_to_m(dist_pixels)
     is_stairs = (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs')
-
+    is_elevator = (node_types.get(node_a) == 'elevator' and node_types.get(node_b) == 'elevator')
+    node_a_floor = node_floors.get(node_a, 0)
+    node_b_floor = node_floors.get(node_b, 0)
+    is_break = BREAK_START <= current_hour < BREAK_END
+    
     if is_stairs:
         if mode == "wheelchair":
             return float ('inf')
         if mode == "energy_saver":
             return 60 + (real_dist_m / Human_avg_Speed)
+
+        if (node_a_floor == 2 and node_b_floor==1) or (node_a_floor == 1 and node_b_floor==2):
+            return First_Second_Floor_StairsTime
+        if (node_a_floor == 1 and node_b_floor==0) or (node_a_floor == 0 and node_b_floor==1):
+            return Ground_First_Floor_StairsTime
+        if (node_a_floor == 2 and node_b_floor==0) or (node_a_floor == 0 and node_b_floor==2):
+            return Ground_Second_Floor_StairsTime 
     
-    if (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs') and (node_floors.get(node_a, 0) == 2 and node_floors.get(node_b, 0)==1) or (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==2):
-        return 23
-    if (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs') and (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==0) or (node_floors.get(node_a, 0) == 0 and node_floors.get(node_b, 0)==1):
-        return 28 #asssumtion
-    if (node_types.get(node_a) == 'stairs' and node_types.get(node_b) == 'stairs') and (node_floors.get(node_a, 0) == 2 and node_floors.get(node_b, 0)==0) or (node_floors.get(node_a, 0) == 0 and node_floors.get(node_b, 0)==2):
-        return 51 #assumtion 
-    
-    if (node_types.get(node_a) == 'elevator' and node_types.get(node_b) == 'elevator') and (node_floors.get(node_a, 0) == 2 and node_floors.get(node_b, 0)==1) or (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==2):
-        return 14 #assumption for elevator time between floors 
-    if (node_types.get(node_a) == 'elevator' and node_types.get(node_b) == 'elevator') and (node_floors.get(node_a, 0) == 1 and node_floors.get(node_b, 0)==0) or (node_floors.get(node_a, 0) == 0 and node_floors.get(node_b, 0)==1):
-        return 18 ################################################
-    if (node_types.get(node_a) == 'elevator' and node_types.get(node_b) == 'elevator') and (node_floors.get(node_a, 0) == 2 and node_floors.get(node_b, 0)==0) or (node_floors.get(node_a, 0) == 0 and node_floors.get(node_b, 0)==2):
-        return 32 ################################################
+    if is_elevator:
+        Elev_time = 0
+        if is_break:
+            Elev_time = ELEVATOR_DELAY_DURING_BREAK
+        if (node_a_floor == 0 and node_b_floor==1) or (node_a_floor == 1 and node_b_floor==0):
+            return Ground_First_Floor_ElevTime + Elev_time
+        if (node_a_floor == 1 and node_b_floor==2) or (node_a_floor == 2 and node_b_floor==1):
+            return First_Second_Floor_ElevTime + Elev_time
+        if (node_a_floor == 0 and node_b_floor==2) or (node_a_floor == 2 and node_b_floor==0):
+            return Ground_Second_Floor_ElevTime + Elev_time
+        
     return real_dist_m / Human_avg_Speed 
 
 def calculate_heuristic(node, goal):
@@ -174,7 +202,20 @@ def a_star(start, goal, mode ="normal"):
     return None, float('inf'), float('inf')
 
 
-# Execution Block
+def show_Current_Time():
+    Hours = {
+        0: "12 AM", 1: "1 AM", 2: "2 AM", 3: "3 AM", 4: "4 AM", 5: "5 AM",
+        6: "6 AM", 7: "7 AM", 8: "8 AM", 9: "9 AM", 10: "10 AM", 11: "11 AM",
+        12: "12 PM", 13: "1 PM", 14: "2 PM", 15: "3 PM", 16: "4 PM", 17: "5 PM",
+        18: "6 PM", 19: "7 PM", 20: "8 PM", 21: "9 PM", 22: "10 PM", 23: "11 PM"
+    }
+
+    Days = {
+        0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday",
+        4: "Friday", 5: "Saturday", 6: "Sunday"
+    }
+    print(f"🕒 Current Time: {Hours.get(current_hour, 'Unknown')} on {Days.get(current_weekday, 'Unknown')}")
+
 if __name__ == "__main__":
     print("\n--- Select Navigation Mode ---")
     print("1. Energy Saver (Avoid Stairs)")
@@ -197,6 +238,7 @@ if __name__ == "__main__":
     path, total_time, total_distance = a_star(start_node, goal_node, mode) 
 
     if path:
+        show_Current_Time()
         print("\n✅ Path Found!")
         print(" -> ".join(path))
         print("-" * 30)

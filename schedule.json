@@ -1,0 +1,214 @@
+{
+  "schedule": [
+    {
+      "course": "Elementary Physics (C-PH111)",
+      "instructor": "Dr. Hassan ElShimy",
+      "room": "318",
+      "group": "A",
+      "day": "Sunday",
+      "start": "09:00",
+      "end": "10:50"
+    },
+    {
+      "course": "Calculus I (C-MA111)",
+      "instructor": "Dr. Ramy Taki Elden",
+      "room": "318",
+      "group": "A",
+      "day": "Sunday",
+      "start": "11:10",
+      "end": "13:00"
+    },
+    {
+      "course": "Calculus I Tutorial",
+      "instructor": "Marwa",
+      "room": "231",
+      "group": "G3",
+      "day": "Sunday",
+      "start": "14:10",
+      "end": "16:00"
+    },
+    {
+      "course": "Intro to Computing & Programming Lab",
+      "instructor": "Nourhan - Amira",
+      "room": "Lab 203",
+      "group": "G1",
+      "day": "Sunday",
+      "start": "14:10",
+      "end": "16:00"
+    },
+    {
+      "course": "Selected Topics in Humanities Tutorial",
+      "instructor": "Mai",
+      "room": "246",
+      "group": "G2",
+      "day": "Sunday",
+      "start": "14:10",
+      "end": "15:00"
+    },
+
+    {
+      "course": "English (HUM111)",
+      "instructor": null,
+      "room": "231",
+      "group": "G1",
+      "day": "Monday",
+      "start": "09:00",
+      "end": "10:00"
+    },
+    {
+      "course": "English (HUM111)",
+      "instructor": null,
+      "room": "246",
+      "group": "G2",
+      "day": "Monday",
+      "start": "09:00",
+      "end": "10:00"
+    },
+    {
+      "course": "English (HUM111)",
+      "instructor": null,
+      "room": "241",
+      "group": "G3",
+      "day": "Monday",
+      "start": "09:00",
+      "end": "10:00"
+    },
+    {
+      "course": "Intro to Computing & Programming Lab",
+      "instructor": "Nourhan - Nadine",
+      "room": "Lab 202",
+      "group": "G2",
+      "day": "Monday",
+      "start": "10:00",
+      "end": "12:00"
+    },
+    {
+      "course": "Elementary Physics Lab",
+      "instructor": null,
+      "room": "Physics Lab 323",
+      "group": "G3",
+      "day": "Monday",
+      "start": "10:00",
+      "end": "12:00"
+    },
+    {
+      "course": "Selected Topics in Humanities Tutorial",
+      "instructor": "Mai",
+      "room": "231",
+      "group": "G1",
+      "day": "Monday",
+      "start": "11:10",
+      "end": "12:10"
+    },
+    {
+      "course": "Selected Topics in Humanities (Critical Thinking) (HUM126)",
+      "instructor": "Dr. Nehal Afifi",
+      "room": "318",
+      "group": "A",
+      "day": "Monday",
+      "start": "14:10",
+      "end": "16:00"
+    },
+
+    {
+      "course": "English (HUM111)",
+      "instructor": null,
+      "room": "231",
+      "group": "G1",
+      "day": "Tuesday",
+      "start": "09:00",
+      "end": "10:00"
+    },
+    {
+      "course": "English (HUM111)",
+      "instructor": null,
+      "room": "246",
+      "group": "G2",
+      "day": "Tuesday",
+      "start": "09:00",
+      "end": "10:00"
+    },
+    {
+      "course": "English (HUM111)",
+      "instructor": null,
+      "room": "241",
+      "group": "G3",
+      "day": "Tuesday",
+      "start": "09:00",
+      "end": "10:00"
+    },
+    {
+      "course": "Intro to Programming (C-CS111)",
+      "instructor": "Dr. Basma Hassan",
+      "room": "318",
+      "group": "A",
+      "day": "Tuesday",
+      "start": "10:00",
+      "end": "12:00"
+    },
+
+    {
+      "course": "Intro to Programming (C-CS111)",
+      "instructor": "Dr. Basma Hassan",
+      "room": "218",
+      "group": "A",
+      "day": "Wednesday",
+      "start": "09:00",
+      "end": "10:50"
+    },
+    {
+      "course": "Calculus I Tutorial",
+      "instructor": "Marwa",
+      "room": "241",
+      "group": "G1",
+      "day": "Wednesday",
+      "start": "11:10",
+      "end": "13:00"
+    },
+    {
+      "course": "Intro to Computing & Programming Lab",
+      "instructor": "Nourhan - Nadine",
+      "room": "Lab 202",
+      "group": "G3",
+      "day": "Wednesday",
+      "start": "11:10",
+      "end": "13:00"
+    },
+    {
+      "course": "Elementary Physics Lab",
+      "instructor": null,
+      "room": "Physics Lab 323",
+      "group": "G2",
+      "day": "Wednesday",
+      "start": "11:10",
+      "end": "13:00"
+    },
+    {
+      "course": "Calculus I Tutorial",
+      "instructor": "Marwa",
+      "room": "331",
+      "group": "G2",
+      "day": "Wednesday",
+      "start": "14:10",
+      "end": "16:00"
+    },
+    {
+      "course": "Selected Topics in Humanities Tutorial",
+      "instructor": "Amira",
+      "room": "241",
+      "group": "G3",
+      "day": "Wednesday",
+      "start": "14:10",
+      "end": "15:10"
+    },
+    {
+      "course": "Elementary Physics Lab",
+      "instructor": null,
+      "room": "Physics Lab 323",
+      "group": "G1",
+      "day": "Wednesday",
+      "start": "15:00",
+      "end": "17:00"
+    }
+  ]
+}

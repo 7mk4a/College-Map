@@ -379,7 +379,7 @@ if __name__ == "__main__":
         
     print(f"\n🔹 Mode Active: {mode}")
     start_node = 'Admission'
-    goal_node = '218A'
+    goal_node = 'HR'
 
     check_room_status(goal_node)
 

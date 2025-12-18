@@ -282,6 +282,92 @@ def check_room_status(target_room):
     if not found_lecture:
         print(f"\n Room {target_room} is currently EMPTY. You can use it.")
 
+import math
+def generate_directions(path):
+    if not path or len(path) < 2:
+        return []
+
+    directions = [f"Start at {path[0]}"]
+    previous_angle = None
+
+    for i in range(len(path) - 1):
+        current = path[i]
+        next_node = path[i + 1]
+
+        x1, y1 = node_coordinates[current]
+        x2, y2 = node_coordinates[next_node]
+
+        floor_current = node_floors.get(current, 0)
+        floor_next = node_floors.get(next_node, 0)
+
+        node_type_current = node_types.get(current, "corridor")
+        node_type_next = node_types.get(next_node, "corridor")
+
+        neighbor_nodes = connections.get(next_node, [])
+        if node_type_next in ["room", "department", "elevator", "stairs"]:
+            next_place = next_node
+        else:
+            next_place = "corridor"
+
+        # floor changes
+        if floor_current != floor_next:
+            if node_type_current == "stairs" or node_type_next == "stairs":
+                if floor_next > floor_current:
+                    directions.append(f"Take stairs UP to floor {floor_next}")
+                else:
+                    directions.append(f"Take stairs DOWN to floor {floor_next}")
+            elif node_type_current == "elevator" or node_type_next == "elevator":
+                directions.append(f"Take elevator to floor {floor_next}")
+
+            if neighbor_nodes:
+                directions.append(f"Go FORWARD until you see {next_place}")
+            else:
+                directions.append("Go FORWARD")
+
+            previous_angle = None
+            continue
+
+        # Calculate angle to next point
+        dx = x2 - x1
+        dy = y2 - y1
+        current_angle = math.atan2(dy, dx) * 180 / math.pi
+        if current_angle < 0:
+            current_angle += 360
+
+        # First move on a new floor
+        if previous_angle is None:
+            if neighbor_nodes:
+                directions.append(f"Go FORWARD until you see {next_place}")
+            else:
+                directions.append("Go FORWARD")
+            previous_angle = current_angle
+            continue
+
+        turn_angle = current_angle - previous_angle
+        while turn_angle > 180:
+            turn_angle -= 360
+        while turn_angle < -180:
+            turn_angle += 360
+
+        if -45 <= turn_angle <= 45:
+            direction_text = "Go FORWARD"
+        elif 45 < turn_angle <= 135:
+            direction_text = "Turn RIGHT"
+        elif turn_angle > 135 or turn_angle < -135:
+            direction_text = "TURN AROUND"
+        else:
+            direction_text = "Turn LEFT"
+
+        if neighbor_nodes and next_place != "corridor":
+            direction_text += f" at the corridor near {next_place}"
+
+
+        directions.append(direction_text)
+        previous_angle = current_angle
+
+    directions.append(f"You have arrived at {path[-1]}")
+    return directions
+
 if __name__ == "__main__":
     print("\n--- Select Navigation Mode ---")
     print("1. Energy Saver (Avoid Stairs)")
@@ -298,13 +384,12 @@ if __name__ == "__main__":
         mode = "normal"
         
     print(f"\n🔹 Mode Active: {mode}")
-    start_node = 'Auditorium-door1'
+    start_node = 'Admission'
     goal_node = '318A'
 
     check_room_status(goal_node)
 
     path, total_time, total_distance = a_star(start_node, goal_node, mode) 
-
     if path:
         print("\n✅ Path Found!")
         print(" -> ".join(path))
@@ -312,5 +397,11 @@ if __name__ == "__main__":
         print(f"⏱  Total Time:     {total_time:.2f} seconds")
         print(f"📏 Total Distance: {total_distance:.2f} m")  
         print("-" * 30)
+
+        directions = generate_directions(path)
+        print("Directions:")
+        for i, d in enumerate(directions, 1):
+            print(f"{i}. {d}")
+
     else:
         print("\n❌ Could not find a path.")

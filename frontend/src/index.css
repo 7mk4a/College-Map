@@ -7,3 +7,29 @@ body,
   margin: 0;
   overflow: hidden;
 }
+
+/* Animated path drawing effect - loops infinitely */
+@keyframes drawPath {
+  0% {
+    stroke-dashoffset: var(--path-length, 1000);
+  }
+
+  40% {
+    stroke-dashoffset: 0;
+  }
+
+  /* Pause when fully drawn */
+  60% {
+    stroke-dashoffset: 0;
+  }
+
+  /* Quick reset (invisible) */
+  65% {
+    stroke-dashoffset: var(--path-length, 1000);
+  }
+
+  /* Brief pause before starting again */
+  100% {
+    stroke-dashoffset: var(--path-length, 1000);
+  }
+}

@@ -15,19 +15,24 @@ def health():
 
 @app.route('/api/nodes', methods=['GET'])
 def get_nodes():
-    start_nodes = []
-    end_nodes = []
+    # Filter to return only meaningful destinations for start/end points
+    # Include: rooms, departments, stairs, elevators
+    # Exclude: corridors, waypoints (b_point, c_point, C_GF_XX, etc.)
     
-    # We want to return nodes that are useful for start/end points
-    # Typically rooms, departments, etc. Corridors might be less useful to list, 
-    # but the user asked for "Locations loaded dynamically".
-    # Let's return all, but maybe add a flag or separate them.
-    
-    # Actually, looking at the data, keys are names.
     nodes = []
     for name, data in map_logic.node_coordinates.items():
         node_type = map_logic.node_types.get(name, "corridor")
         floor = map_logic.node_floors.get(name, 0)
+        
+        # Skip corridor nodes
+        if node_type == "corridor":
+            continue
+            
+        # Skip waypoint-style names (b_point, c_point, C_GF_05, etc.)
+        name_lower = name.lower()
+        if any(pattern in name_lower for pattern in ['_point', 'c_gf_', 'c_ff_', 'c_sf_', '_corridor']):
+            continue
+        
         nodes.append({
             "name": name,
             "x": data[0],

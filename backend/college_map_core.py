@@ -284,7 +284,41 @@ def generate_directions(path):
     if not path or len(path) < 2:
         return []
 
-    directions = [f"Start at {path[0]}"]
+    directions = []
+    
+    # Helper function to get nearby landmarks
+    def get_nearby_landmarks(node, exclude_types=['corridor']):
+        """Get interesting landmarks connected to this node"""
+        landmarks = []
+        neighbors = connections.get(node, [])
+        for neighbor in neighbors:
+            neighbor_type = node_types.get(neighbor, "corridor")
+            if neighbor_type not in exclude_types and neighbor not in path:
+                landmarks.append(neighbor)
+        return landmarks
+    
+    # Helper function to describe location context
+    def get_location_context(node):
+        """Describe what's around this node"""
+        node_type = node_types.get(node, "corridor")
+        if node_type in ["room", "department"]:
+            return f"{node}"
+        
+        # For corridors, look for nearby interesting places
+        landmarks = get_nearby_landmarks(node)
+        if landmarks:
+            if len(landmarks) == 1:
+                return f"the corridor near {landmarks[0]}"
+            elif len(landmarks) == 2:
+                return f"the corridor between {landmarks[0]} and {landmarks[1]}"
+            else:
+                return f"the corridor near {landmarks[0]}, {landmarks[1]}, and others"
+        return "the corridor"
+    
+    # Start instruction
+    start_context = get_location_context(path[0])
+    directions.append(f"Start at {start_context}")
+    
     previous_angle = None
 
     for i in range(len(path) - 1):
@@ -300,27 +334,26 @@ def generate_directions(path):
         node_type_current = node_types.get(current, "corridor")
         node_type_next = node_types.get(next_node, "corridor")
 
-        neighbor_nodes = connections.get(next_node, [])
-        if node_type_next in ["room", "department", "elevator", "stairs"]:
-            next_place = next_node
-        else:
-            next_place = "corridor"
-
-        # floor changes
+        # Get what's ahead
+        next_context = get_location_context(next_node)
+        
+        # Get landmarks visible from current position
+        current_landmarks = get_nearby_landmarks(current)
+        
+        # Floor changes
         if floor_current != floor_next:
             if node_type_current == "stairs" or node_type_next == "stairs":
                 if floor_next > floor_current:
-                    directions.append(f"Take stairs UP to floor {floor_next}")
+                    directions.append(f"🔼 Take the stairs UP to Floor {floor_next}")
                 else:
-                    directions.append(f"Take stairs DOWN to floor {floor_next}")
+                    directions.append(f"🔽 Take the stairs DOWN to Floor {floor_next}")
             elif node_type_current == "elevator" or node_type_next == "elevator":
-                directions.append(f"Take elevator to floor {floor_next}")
+                directions.append(f"🛗 Take the elevator to Floor {floor_next}")
 
-            if neighbor_nodes:
-                directions.append(f"Go FORWARD until you see {next_place}")
-            else:
-                directions.append("Go FORWARD")
-
+            # After floor change, describe where to go
+            if node_type_next not in ["stairs", "elevator"]:
+                directions.append(f"   → Exit and head towards {next_context}")
+            
             previous_angle = None
             continue
 
@@ -331,38 +364,70 @@ def generate_directions(path):
         if current_angle < 0:
             current_angle += 360
 
-        # First move on a new floor
+        # First move on a new floor or at start
         if previous_angle is None:
-            if neighbor_nodes:
-                directions.append(f"Go FORWARD until you see {next_place}")
+            if node_type_next in ["room", "department"]:
+                directions.append(f"Walk straight to {next_node}")
             else:
-                directions.append("Go FORWARD")
+                # Look ahead to find next interesting landmark
+                ahead_landmarks = get_nearby_landmarks(next_node)
+                if ahead_landmarks:
+                    directions.append(f"Walk forward (you'll pass near {ahead_landmarks[0]})")
+                else:
+                    directions.append(f"Walk forward along the corridor")
             previous_angle = current_angle
             continue
 
+        # Calculate turn
         turn_angle = current_angle - previous_angle
         while turn_angle > 180:
             turn_angle -= 360
         while turn_angle < -180:
             turn_angle += 360
 
+        # Create contextual direction based on turn and landmarks
+        direction_parts = []
+        
+        # Determine turn direction
         if -45 <= turn_angle <= 45:
-            direction_text = "Go FORWARD"
+            turn_instruction = "Continue straight"
         elif 45 < turn_angle <= 135:
-            direction_text = "Turn RIGHT"
+            turn_instruction = "Turn RIGHT"
         elif turn_angle > 135 or turn_angle < -135:
-            direction_text = "TURN AROUND"
+            turn_instruction = "Turn AROUND"
         else:
-            direction_text = "Turn LEFT"
-
-        if neighbor_nodes and next_place != "corridor":
-            direction_text += f" at the corridor near {next_place}"
-
-
-        directions.append(direction_text)
+            turn_instruction = "Turn LEFT"
+        
+        # Add landmark context
+        if current_landmarks:
+            if turn_instruction == "Continue straight":
+                direction_parts.append(f"{turn_instruction} past {current_landmarks[0]}")
+            else:
+                direction_parts.append(f"{turn_instruction} when you reach {current_landmarks[0]}")
+        else:
+            direction_parts.append(turn_instruction)
+        
+        # Add destination context
+        if node_type_next in ["room", "department"]:
+            direction_parts.append(f"towards {next_node}")
+        else:
+            next_landmarks = get_nearby_landmarks(next_node)
+            if next_landmarks:
+                direction_parts.append(f"(heading towards {next_landmarks[0]})")
+        
+        directions.append(" ".join(direction_parts))
         previous_angle = current_angle
 
-    directions.append(f"You have arrived at {path[-1]}")
+    # Final arrival
+    final_node = path[-1]
+    final_type = node_types.get(final_node, "corridor")
+    if final_type == "room":
+        directions.append(f"🎯 You have arrived at room {final_node}")
+    elif final_type == "department":
+        directions.append(f"🎯 You have arrived at {final_node}")
+    else:
+        directions.append(f"🎯 You have arrived at your destination: {final_node}")
+    
     return directions
 
 if __name__ == "__main__":

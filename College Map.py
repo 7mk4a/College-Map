@@ -24,6 +24,9 @@ First_Second_Floor_ElevTime = 15  # seconds
 Ground_First_Floor_StairsTime = 30  # seconds
 Ground_Second_Floor_StairsTime = 55  # seconds
 First_Second_Floor_StairsTime = 25  # seconds
+Ground_First_floorDistance = 6.2  # meters
+Ground_Second_floorDistance = 11.2  # meters
+First_Second_floorDistance = 5.0  # meters
 
 
 # --- 2. Data Structures ---
@@ -132,16 +135,16 @@ def calculate_heuristic(node, goal):
 
 def calculate_different_floors_heuristic(node, goal):
     dist_pixels = calc_dist(node, goal)
-    real_dist_m = pixels_to_m(dist_pixels)  
-    if (node_floors.get(node, 0) == 0 and node_floors.get(goal, 0)==1) or node_floors.get(node, 0) == 1 and node_floors.get(goal, 0)==0 :
-        floor_diffrence_distance = 6.2 #meters
-        return calc_hypotenuse(real_dist_m, floor_diffrence_distance)/ MAX_SPEED
-    elif node_floors.get(node, 0) ==0 and node_floors.get(goal, 0)==2 or node_floors.get(node, 0) ==2 and node_floors.get(goal, 0)==0 :
-        floor_diffrence_distance = 11.2 
-        return calc_hypotenuse(real_dist_m, floor_diffrence_distance)/ MAX_SPEED
-    elif node_floors.get(node, 0) ==1 and node_floors.get(goal, 0)==2 or node_floors.get(node, 0) ==2 and node_floors.get(goal, 0)==1 :
-        floor_diffrence_distance = 5.0 
-        return calc_hypotenuse(real_dist_m, floor_diffrence_distance)/ MAX_SPEED
+    real_dist_m = pixels_to_m(dist_pixels) 
+    node_floor = node_floors.get(node, 0)
+    goal_floor = node_floors.get(goal, 0)
+  
+    if (node_floor == 0 and goal_floor == 1) or (node_floor == 1 and goal_floor == 0): 
+        return calc_hypotenuse(real_dist_m, Ground_First_floorDistance)/ MAX_SPEED
+    elif node_floor ==0 and goal_floor==2 or node_floor ==2 and goal_floor==0 :
+        return calc_hypotenuse(real_dist_m, Ground_Second_floorDistance)/ MAX_SPEED
+    elif node_floor ==1 and goal_floor==2 or node_floor ==2 and goal_floor==1 :
+        return calc_hypotenuse(real_dist_m, First_Second_floorDistance)/ MAX_SPEED
 
 # A* Algorithm (Cumulative Time + Distance)
 
@@ -276,7 +279,7 @@ def check_room_status(target_room):
         if not found_lecture:
             print(f"\n Room {target_room} is currently EMPTY. You can use it.")
 
-import math
+
 def generate_directions(path):
     if not path or len(path) < 2:
         return []
@@ -378,8 +381,8 @@ if __name__ == "__main__":
         mode = "normal"
         
     print(f"\n🔹 Mode Active: {mode}")
-    start_node = 'Admission'
-    goal_node = 'HR'
+    start_node = 'VIP'
+    goal_node = '318A'
 
     check_room_status(goal_node)
 

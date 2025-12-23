@@ -380,7 +380,6 @@ def generate_directions(path):
         else:
             move = "Turn AROUND"
 
-        # Add nearby place if exists
         if place_ahead:
             directions.append(f"{move} towards {place_ahead}")
         else:

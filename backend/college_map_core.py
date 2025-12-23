@@ -295,8 +295,6 @@ def check_room_status(target_room):
         if not found_lecture:
             print(f"\n Room {target_room} is currently EMPTY. You can use it.")
 
-import math
-
 def generate_directions(path):
     if not path or len(path) < 2:
         return []

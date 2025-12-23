@@ -9,6 +9,7 @@ CORS(app)  # Enable CORS for all routes
 # Helper to ensure data is loaded
 map_logic.load_map_data()
 
+map_logic.time()
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({"status": "ok"})
@@ -94,16 +95,8 @@ def check_schedule(room_name):
         return jsonify({"status": "unknown", "message": "Schedule file missing"})
 
     import json
-    from datetime import datetime
     
-    # Re-using logic from original script, but adapted for API return
-    now = datetime.now()
-    # For testing, we might want to mock time, but let's use real time as requested.
-    current_hour = now.hour
-    current_minute = now.minute
-    current_weekday = now.weekday()
-    days_map = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
-    today_str = days_map.get(current_weekday)
+    current_hour, current_minute, today_str = map_logic.show_current_time()
     current_time_minutes = (current_hour * 60) + current_minute
 
     with open(schedule_file, "r", encoding="utf-8") as f:

@@ -21,3 +21,9 @@ export const fetchRoomSchedule = async (roomName) => {
     if (!response.ok) throw new Error('Failed to fetch schedule');
     return response.json();
 };
+
+export const searchSchedule = async (query) => {
+    const response = await fetch(`${API_URL}/schedule/search?q=${encodeURIComponent(query)}`);
+    if (!response.ok) throw new Error('Failed to search schedule');
+    return response.json();
+};

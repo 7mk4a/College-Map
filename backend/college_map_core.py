@@ -245,9 +245,14 @@ def check_room_status(target_room):
         current_hour = current["hour"]
         current_minute = current["minute"]
 
-        file_name = "schedule.json" 
+        # Try to find schedule.json in here or parent dir
+        here = os.path.dirname(__file__)
+        file_name = os.path.join(here, "schedule.json")
         if not os.path.exists(file_name):
-            print(f"❌ Error: {file_name} file not found.")
+            file_name = os.path.join(here, "..", "schedule.json")
+
+        if not os.path.exists(file_name):
+            print(f"❌ Error: schedule.json file not found.")
             return
 
         with open(file_name, "r", encoding="utf-8") as f:
@@ -294,6 +299,34 @@ def check_room_status(target_room):
 
         if not found_lecture:
             print(f"\n Room {target_room} is currently EMPTY. You can use it.")
+
+def search_schedule(query):
+    # Try to find schedule.json in here or parent dir
+    here = os.path.dirname(__file__)
+    file_name = os.path.join(here, "schedule.json")
+    if not os.path.exists(file_name):
+        file_name = os.path.join(here, "..", "schedule.json")
+
+    if not os.path.exists(file_name):
+        return []
+
+    with open(file_name, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    schedule_data = data.get("schedule", []) if isinstance(data, dict) else data
+    
+    results = []
+    query = query.lower()
+    for entry in schedule_data:
+        course = entry.get("course", "").lower()
+        instructor = entry.get("instructor", "")
+        instructor_str = instructor.lower() if instructor else ""
+        room = entry.get("room", "").lower()
+        
+        if query in course or query in instructor_str or query in room:
+            results.append(entry)
+            
+    return results
 
 def generate_directions(path):
     if not path or len(path) < 2:

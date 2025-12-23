@@ -90,7 +90,12 @@ def check_schedule(room_name):
     # The original check_room_status prints to stdout. We should probably just read the json here or refactor.
     # Let's read the json directly to avoid stdout capture mess.
     
-    schedule_file = os.path.join(os.path.dirname(__file__), "schedule.json")
+    # Try to find schedule.json in here or parent dir
+    here = os.path.dirname(__file__)
+    schedule_file = os.path.join(here, "schedule.json")
+    if not os.path.exists(schedule_file):
+        schedule_file = os.path.join(here, "..", "schedule.json")
+
     if not os.path.exists(schedule_file):
         return jsonify({"status": "unknown", "message": "Schedule file missing"})
 
@@ -135,6 +140,13 @@ def check_schedule(room_name):
                 continue
                 
     return jsonify(occupancy)
+@app.route('/api/schedule/search', methods=['GET'])
+def search_schedule():
+    query = request.args.get('q', '')
+    if not query:
+        return jsonify([])
+    results = map_logic.search_schedule(query)
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

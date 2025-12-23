@@ -161,7 +161,7 @@ const MapCanvas = ({ currentFloor, pathDetails, startNodeName, endNodeName }) =>
         });
     };
 
-    const mapImage = `/assets/floor_${currentFloor}.jpeg`;
+    const mapImage = `/assets/floor_${currentFloor}.jpg`;
 
     return (
         <div

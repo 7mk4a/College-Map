@@ -6,6 +6,7 @@ A Google Maps-like indoor navigation application for university buildings with m
 
 - 🗺️ **Interactive Map**: Visual floor plans for Ground, First, and Second floors
 - 🧭 **Smart Navigation**: A* algorithm for optimal pathfinding
+- 📷 **QR Code Scanner**: Scan QR codes to automatically set your starting location
 - ♿ **Accessibility Modes**:
   - Normal Mode (Fastest route)
   - Energy Saver (Minimizes stair usage)
@@ -75,7 +76,12 @@ npm install
 cd ..
 ```
 
-**What this does:** Installs all required JavaScript packages including React, Vite, Tailwind CSS, and other dependencies.
+**What this does:** Installs all required JavaScript packages including:
+- **React 19**: UI framework
+- **Vite**: Build tool and dev server  
+- **Tailwind CSS 4**: Styling framework
+- **Lucide React**: Icon library
+- **html5-qrcode**: QR code scanning library for camera-based location detection
 
 ---
 
@@ -135,6 +141,7 @@ College-Map/
 │   │   │   ├── MapCanvas.jsx       # Map display with zoom/pan
 │   │   │   ├── FloorSwitcher.jsx   # Floor selection tabs
 │   │   │   └── NavigationControls.jsx  # Route input/output
+│   │   ├── QRCodeScanner.jsx  # QR code scanner modal
 │   │   ├── App.jsx            # Main application
 │   │   ├── api.js             # Backend API calls
 │   │   └── index.css          # Tailwind CSS styles
@@ -149,8 +156,17 @@ College-Map/
 ## Usage Guide
 
 ### 1. Select Start Location
+
+**Option A: Manual Selection**
 - Click the "Choose start location..." dropdown
 - Select your current position (e.g., "VIP", "Library-door1")
+
+**Option B: QR Code Scanning** 📷
+- Click the QR code button (blue button next to start location dropdown)
+- Grant camera permissions when prompted
+- Point your camera at a QR code containing a location identifier
+- The scanned location will automatically populate as your start point
+- The camera will stop automatically after a successful scan
 
 ### 2. Select Destination
 - Click the "Choose destination..." dropdown
@@ -249,6 +265,7 @@ pip install flask flask-cors
 - **Vite**: Build tool and dev server
 - **Tailwind CSS 4**: Styling framework
 - **Lucide React**: Icon library
+- **html5-qrcode**: QR code scanning library
 
 ---
 

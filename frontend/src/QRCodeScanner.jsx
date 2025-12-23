@@ -43,7 +43,7 @@ function QRCodeScanner({ setStartNode, onClose }) {
                     setTimeout(() => {
                         stopScanning();
                         if (onClose) onClose();
-                    }, 1500);
+                    }, 5000);
                 },
                 (err) => {
                     // Ignore continuous scan errors (normal when no QR detected)

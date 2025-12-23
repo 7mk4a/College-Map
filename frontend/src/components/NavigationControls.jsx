@@ -1,5 +1,6 @@
-import React from 'react';
-import { Search, MapPin, Navigation, Info } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, MapPin, Navigation, Info, QrCode } from 'lucide-react';
+import QRCodeScanner from '../QRCodeScanner';
 
 const NavigationControls = ({
     nodes,
@@ -15,6 +16,8 @@ const NavigationControls = ({
     occupancy,
     reset
 }) => {
+    const [showScanner, setShowScanner] = useState(false);
+
     return (
         <div className="absolute top-4 left-4 w-96 bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-6 z-[1000] max-h-[90vh] overflow-y-auto border border-white/20">
             <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
@@ -24,20 +27,31 @@ const NavigationControls = ({
 
             <div className="space-y-4">
                 {/* Start Node */}
-                <div className="relative">
-                    <MapPin className="absolute left-3 top-3 w-5 h-5 text-green-500" />
-                    <select
-                        value={startNode}
-                        onChange={(e) => setStartNode(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all appearance-none cursor-pointer text-gray-700 font-medium"
-                    >
-                        <option value="">Choose start location...</option>
-                        {nodes.map((n) => (
-                            <option key={n.name} value={n.name}>
-                                {n.name} ({n.floor === 0 ? 'G' : n.floor})
-                            </option>
-                        ))}
-                    </select>
+                <div className="space-y-2">
+                    <div className="flex gap-2">
+                        <div className="relative flex-1">
+                            <MapPin className="absolute left-3 top-3 w-5 h-5 text-green-500" />
+                            <select
+                                value={startNode}
+                                onChange={(e) => setStartNode(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all appearance-none cursor-pointer text-gray-700 font-medium"
+                            >
+                                <option value="">Choose start location...</option>
+                                {nodes.map((n) => (
+                                    <option key={n.name} value={n.name}>
+                                        {n.name} ({n.floor === 0 ? 'G' : n.floor})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <button
+                            onClick={() => setShowScanner(true)}
+                            className="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all transform active:scale-95 flex items-center gap-2 font-semibold"
+                            title="Scan QR Code"
+                        >
+                            <QrCode className="w-5 h-5" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* End Node */}
@@ -141,6 +155,14 @@ const NavigationControls = ({
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* QR Scanner Modal */}
+            {showScanner && (
+                <QRCodeScanner
+                    setStartNode={setStartNode}
+                    onClose={() => setShowScanner(false)}
+                />
             )}
         </div>
     );

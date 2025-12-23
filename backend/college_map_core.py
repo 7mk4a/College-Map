@@ -5,11 +5,14 @@ from datetime import datetime
 
 
 # --- 0. Current Time Info ---
-now = datetime.now()
-current_hour = now.hour        # 0–23
-current_minute = now.minute
-current_weekday = now.weekday()  # 0=Mon, 6=Sun
-
+def time ():
+    now = datetime.now()
+    return {
+        "now": now,
+        "hour": now.hour,        # 0–23
+        "minute": now.minute,
+        "weekday": now.weekday()  # 0=Mon, 6=Sun
+    }
 
 # --- 1. Constants ---
 METERS_PER_PIXEL = 67/857   # ≈ 0.0781797
@@ -100,6 +103,8 @@ def calculate_time_cost(node_a, node_b, mode="normal"):
     is_elevator = (node_types.get(node_a) == 'elevator' and node_types.get(node_b) == 'elevator')
     node_a_floor = node_floors.get(node_a, 0)
     node_b_floor = node_floors.get(node_b, 0)
+    current = time()
+    current_hour = current["hour"]
     is_break = BREAK_START <= current_hour < BREAK_END
     
     if is_stairs:
@@ -210,6 +215,7 @@ def a_star(start, goal, mode ="normal"):
 
 
 def show_Current_Time():
+
     Hours = {
         0: "12 AM", 1: "1 AM", 2: "2 AM", 3: "3 AM", 4: "4 AM", 5: "5 AM",
         6: "6 AM", 7: "7 AM", 8: "8 AM", 9: "9 AM", 10: "10 AM", 11: "11 AM",
@@ -221,17 +227,23 @@ def show_Current_Time():
         0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday",
         4: "Friday", 5: "Saturday", 6: "Sunday"
     }
-    ## print(f"🕒 Current Time: {Hours.get(current_hour, 'Unknown')} on {Days.get(current_weekday, 'Unknown')}")
-    
-    return Days.get(current_weekday, "Unknown")
+    # Fetch fresh values
+    current = time()
+    current_hour = current["hour"]
+    current_weekday = current["weekday"]
 
+    return Days.get(current_weekday, "Unknown"), Hours.get(current_hour, "Unknown"), current["minute"]
 
 def check_room_status(target_room):
     if node_types.get(target_room) == "department" or node_types.get(target_room) == "corridor":
         return
     else:
         
-        today_name_str = show_Current_Time() 
+        # Get readable day/hour and numeric time values
+        day_name, hour_label = show_Current_Time()
+        current = time()
+        current_hour = current["hour"]
+        current_minute = current["minute"]
 
         file_name = "schedule.json" 
         if not os.path.exists(file_name):
@@ -246,7 +258,7 @@ def check_room_status(target_room):
         else:
             schedule_data = data
 
-        print(f"\n🔎 Checking schedule for room: {target_room} on {today_name_str}...")
+        print(f"\n🔎 Checking schedule for room: {target_room} on {(day_name, hour_label)}...")
         
         found_lecture = False
         
@@ -257,7 +269,7 @@ def check_room_status(target_room):
             day_in_json = course.get("day", "")
             
             
-            if target_room in room_in_json and day_in_json == today_name_str:
+            if target_room in room_in_json and day_in_json == day_name:
                 
                 start_str = course.get("start", "00:00")
                 end_str = course.get("end", "00:00")

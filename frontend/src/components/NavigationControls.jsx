@@ -61,15 +61,15 @@ const NavigationControls = ({
                 <div className="grid grid-cols-3 gap-2 bg-gray-100 p-1 rounded-xl">
                     {[
                         { id: 'normal', label: 'Fastest' },
-                        { id: 'energy_saver', label: 'No Stairs' },
+                        { id: 'stairs', label: 'Stairs' },
                         { id: 'wheelchair', label: 'Elevator' },
                     ].map((m) => (
                         <button
                             key={m.id}
                             onClick={() => setMode(m.id)}
                             className={`py-2 text-xs font-bold rounded-lg transition-all ${mode === m.id
-                                    ? 'bg-white text-blue-600 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-blue-600 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             {m.label}

@@ -8,7 +8,7 @@ A Google Maps-like indoor navigation application for university buildings with m
 - 🧭 **Smart Navigation**: A* algorithm for optimal pathfinding
 - ♿ **Accessibility Modes**:
   - Normal Mode (Fastest route)
-  - Energy Saver (Minimizes stair usage)
+  - Stairs Mode (Favors stairs over elevators)
   - Wheelchair Mode (Elevator-only, no stairs)
 - 📍 **Step-by-Step Directions**: Turn-by-turn navigation instructions
 - 📅 **Room Occupancy**: Real-time room availability based on class schedules
@@ -158,7 +158,7 @@ College-Map/
 
 ### 3. Choose Navigation Mode
 - **Fastest**: Shortest time route (may include stairs)
-- **No Stairs**: Avoids stairs when possible
+- **Stairs**: Favors stairs when possible
 - **Elevator**: Only uses elevators (no stairs at all)
 
 ### 4. Navigate

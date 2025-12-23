@@ -105,9 +105,8 @@ def calculate_time_cost(node_a, node_b, mode="normal"):
     if is_stairs:
         if mode == "wheelchair":
             return float ('inf')
-        if mode == "energy_saver":
-            return 60 + (real_dist_m / Human_avg_Speed)
-
+        
+        # In 'stairs' mode, we use standard stairs time without any penalty
         if (node_a_floor == 2 and node_b_floor==1) or (node_a_floor == 1 and node_b_floor==2):
             return First_Second_Floor_StairsTime
         if (node_a_floor == 1 and node_b_floor==0) or (node_a_floor == 0 and node_b_floor==1):
@@ -119,6 +118,11 @@ def calculate_time_cost(node_a, node_b, mode="normal"):
         Elev_time = 0
         if is_break:
             Elev_time = ELEVATOR_DELAY_DURING_BREAK
+        
+        # In 'stairs' mode, we penalize the elevator to favor stairs
+        if mode == "stairs":
+            Elev_time += 120 # Added 2 min penalty to elevator in stairs mode
+
         if (node_a_floor == 0 and node_b_floor==1) or (node_a_floor == 1 and node_b_floor==0):
             return Ground_First_Floor_ElevTime + Elev_time
         if (node_a_floor == 1 and node_b_floor==2) or (node_a_floor == 2 and node_b_floor==1):
@@ -432,14 +436,14 @@ def generate_directions(path):
 
 if __name__ == "__main__":
     print("\n--- Select Navigation Mode ---")
-    print("1. Energy Saver (Avoid Stairs)")
+    print("1. Stairs (Favor Stairs)")
     print("2. Normal (Fastest Route)")
-    print("3. Wheelchair (No Stairs)")
+    print("3. Wheelchair (Elevator Only)")
     
     choice = input("Enter choice (1, 2, or 3): ")
     mode = "normal" 
     if choice == "1":
-        mode = "energy_saver"
+        mode = "stairs"
     elif choice == "3":
         mode = "wheelchair"
     else :

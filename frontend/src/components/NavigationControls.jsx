@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, MapPin, Navigation, Info, QrCode } from 'lucide-react';
+import { Search, MapPin, Navigation, Info, QrCode, Clock } from 'lucide-react';
 import QRCodeScanner from '../QRCodeScanner';
+import { searchSchedule } from '../api';
 
 const NavigationControls = ({
     nodes,
@@ -17,6 +18,35 @@ const NavigationControls = ({
     reset
 }) => {
     const [showScanner, setShowScanner] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+
+    const handleSearchInput = async (val) => {
+        setSearchQuery(val);
+        if (val.length > 1) {
+            setIsSearching(true);
+            setShowSearchResults(true);
+            try {
+                const results = await searchSchedule(val);
+                setSearchResults(results);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setIsSearching(false);
+            }
+        } else {
+            setSearchResults([]);
+            setShowSearchResults(false);
+        }
+    };
+
+    const selectSearchResult = (result) => {
+        setEndNode(result.room);
+        setSearchQuery(result.course);
+        setShowSearchResults(false);
+    };
 
     return (
         <div className="absolute top-4 left-4 w-96 bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-6 z-[1000] max-h-[90vh] overflow-y-auto border border-white/20">
@@ -26,6 +56,54 @@ const NavigationControls = ({
             </h1>
 
             <div className="space-y-4">
+                {/* Lecture Search */}
+                <div className="relative">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-3 w-5 h-5 text-blue-500" />
+                        <input
+                            type="text"
+                            placeholder="Search lectures, instructors, or rooms..."
+                            value={searchQuery}
+                            onChange={(e) => handleSearchInput(e.target.value)}
+                            onFocus={() => searchQuery && setShowSearchResults(true)}
+                            className="w-full pl-10 pr-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400 font-medium"
+                        />
+                        {isSearching && (
+                            <div className="absolute right-3 top-3.5">
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
+                            </div>
+                        )}
+                    </div>
+
+                    {showSearchResults && searchResults.length > 0 && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[1001] max-h-60 overflow-y-auto custom-scrollbar">
+                            {searchResults.map((res, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => selectSearchResult(res)}
+                                    className="w-full text-left p-3 hover:bg-blue-50 border-b border-gray-50 last:border-0 transition-colors"
+                                >
+                                    <p className="font-bold text-gray-800 text-sm">{res.course}</p>
+                                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                                        <span className="flex items-center gap-1">
+                                            <MapPin className="w-3 h-3 text-red-400" /> {res.room}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <Clock className="w-3 h-3 text-blue-400" /> {res.day}, {res.start}-{res.end}
+                                        </span>
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-semibold">{res.instructor || 'Staff'}</p>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex items-center gap-4 py-2">
+                    <div className="h-px flex-1 bg-gray-100"></div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Or Navigate Directly</span>
+                    <div className="h-px flex-1 bg-gray-100"></div>
+                </div>
                 {/* Start Node */}
                 <div className="space-y-2">
                     <div className="flex gap-2">
@@ -101,7 +179,11 @@ const NavigationControls = ({
 
                 {routeStats && (
                     <button
-                        onClick={reset}
+                        onClick={() => {
+                            reset();
+                            setSearchQuery('');
+                            setSearchResults([]);
+                        }}
                         className="w-full py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl text-sm transition-all"
                     >
                         Clear Route

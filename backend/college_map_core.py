@@ -15,7 +15,7 @@ def time ():
     }
 
 # --- 1. Constants ---
-METERS_PER_PIXEL = 67/857   # ≈ 0.0781797
+METERS_PER_PIXEL = 0.08189186344   # ≈ 0.0781797
 Human_avg_Speed = .5486  #m/s
 MAX_SPEED = 1.2  #m/s
 BREAK_START = 13  # 1 PM

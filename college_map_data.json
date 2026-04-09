@@ -1,5 +1,5 @@
 {
-"Point1": { "x": 143, "y": 454, "type": "corridor", "floor": 0, "neighbors": [{"name": "Point32"}, {"name": "Library-door1"}] },
+  "Point1": { "x": 143, "y": 454, "type": "corridor", "floor": 0, "neighbors": [{"name": "Point32"}, {"name": "Library-door1"}] },
   "Point2": { "x": 228, "y": 412, "type": "corridor", "floor": 0, "neighbors": [{"name": "Point32"}, {"name": "Point3"}] },
   "Point3": { "x": 251, "y": 448, "type": "corridor", "floor": 0, "neighbors": [{"name": "Point2"}, {"name": "Point4"}, {"name": "Left-Toilet"}, {"name": "Auditorium-door1"}] },
   "Point4": { "x": 301, "y": 563, "type": "corridor", "floor": 0, "neighbors": [{"name": "Point3"}, {"name": "Point5"}, {"name": "Point7"}] },
@@ -69,7 +69,7 @@
   "Stairs-S5": { "x": 494, "y": 375, "type": "stairs", "floor": 0, "neighbors": [{"name": "Point12"}, {"name": "B_Left-Stairs"}] },
   "Stairs-S6": { "x": 834, "y": 379, "type": "stairs", "floor": 0, "neighbors": [{"name": "Point19"}, {"name": "B_Right-Stairs"}] },
 
-  
+
   "B_Point 1": { "x": 156, "y": 409, "type": "corridor", "floor": 1, "neighbors": [ { "name": "218B" }, { "name": "B_Point 36" } ] },
   "B_Point 2": { "x": 205, "y": 443, "type": "corridor", "floor": 1, "neighbors": [ { "name": "218B-Stairs" }, { "name": "B_Point 36" }, { "name": "B_Point 4" } ] },
   "B_Point 3": { "x": 267, "y": 585, "type": "corridor", "floor": 1, "neighbors": [ { "name": "218A-Stairs" }, { "name": "B_Point 37" }, { "name": "B_Point 6" } ] },
